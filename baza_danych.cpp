@@ -206,9 +206,8 @@ public:
         dane << std::endl;
     }
 
-    void wypiszDaneTabeli()
+    std::vector<std::vector<std::string>> pobierzDanieIKolumny(std::filesystem::path tabelaDoModyfikacji)
     {
-        std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
 
         std::filesystem::path wartosc = "schemat.txt";
         std::filesystem::path pelna_sciezka_schemat = tabelaDoModyfikacji / wartosc;
@@ -247,7 +246,15 @@ public:
             kolumnyIDane.push_back(tymczasowy);
         }
 
-        std::vector<int> najwiekszyElement(kolumny.size(), 0);
+        return kolumnyIDane;
+    }
+
+    void wypiszDaneTabeli()
+    {
+        std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
+        auto kolumnyIDane = pobierzDanieIKolumny(tabelaDoModyfikacji);
+
+        std::vector<int> najwiekszyElement(kolumnyIDane[0].size(), 0);
 
         for (int i = 0; i < kolumnyIDane.size(); i++)
         {
@@ -271,7 +278,7 @@ public:
             liniaRozmiar += 2;
         }
 
-        for (int i = 0; i < liniaRozmiar-4; i++)
+        for (int i = 0; i < liniaRozmiar - 4; i++)
         {
             linia.push_back('-');
         }
@@ -300,6 +307,11 @@ public:
 
         std::cout << "Wcisnij enter aby kontynuowac!\n";
         getch();
+    }
+
+    void wyszukajWartoscWKolmnie()
+    {
+        std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
     }
 };
 int wypiszMenuGlowne()
