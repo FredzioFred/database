@@ -249,11 +249,8 @@ public:
         return kolumnyIDane;
     }
 
-    void wypiszDaneTabeli()
+    void wypiszDaneTabeli(std::vector<std::vector<std::string>> kolumnyIDane)
     {
-        std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
-        auto kolumnyIDane = pobierzDanieIKolumny(tabelaDoModyfikacji);
-
         std::vector<int> najwiekszyElement(kolumnyIDane[0].size(), 0);
 
         for (int i = 0; i < kolumnyIDane.size(); i++)
@@ -309,9 +306,47 @@ public:
         getch();
     }
 
-    void wyszukajWartoscWKolmnie()
+
+    void wypiszWszystkieDaneTabeli()
     {
         std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
+        auto kolumnyIDane = pobierzDanieIKolumny(tabelaDoModyfikacji);
+        wypiszDaneTabeli(kolumnyIDane);
+    }
+
+
+    void wyszukajWartoscWKolumnie()
+    {
+        std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
+        auto kolumnyIDane = pobierzDanieIKolumny(tabelaDoModyfikacji);
+
+        int indexKolmny = 0;
+
+        for (int i = 0; i < kolumnyIDane[0].size(); i++)
+        {
+            std::cout << "[" << i << ']' << kolumnyIDane[0][i] << std::endl;
+        }
+        std::cout << "Wybierz kolumne w ktorej chcesz szukac dane : ";
+        std::cin >> indexKolmny;
+
+        std::string wartoscDoSzukania;
+        std::cout << "Podaj wartosc jaka chcesz wyszukac : ";
+        std::cin >> wartoscDoSzukania;
+
+        std::vector<int> indeksyZnalezionychElementow;
+        for (int i = 0; i < kolumnyIDane.size(); i++)
+        {
+            if (kolumnyIDane[i][indexKolmny] == wartoscDoSzukania)
+            {
+                indeksyZnalezionychElementow.push_back(i);
+            }
+        }
+
+        std::cout << "Znalezione ideksy : \n";
+        for (int i = 0; i < indeksyZnalezionychElementow.size(); i++)
+        {
+            std::cout << indeksyZnalezionychElementow[i];
+        }
     }
 };
 int wypiszMenuGlowne()
@@ -334,7 +369,8 @@ int wypiszMenuGlowne()
     std::cout << "[4] Nadaj wlasciwosci tabeli\n";
     std::cout << "[5] Podaj wiersz do tabeli\n";
     std::cout << "[6] Wyswietl wartosci tabeli\n";
-    std::cout << "[7] Zamknij program\n";
+    std::cout << "[7] Wyszukaj wartosc w tabeli\n";
+    std::cout << "[8] Zamknij program\n";
     std::cin >> wybranaOpcja;
     return wybranaOpcja;
 }
@@ -366,7 +402,11 @@ int main()
             break;
 
         case 6:
-            bazadanych.wypiszDaneTabeli();
+            bazadanych.wypiszWszystkieDaneTabeli();
+            break;
+
+        case 7:
+            bazadanych.wyszukajWartoscWKolumnie();
             break;
 
         default:
