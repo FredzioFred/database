@@ -161,7 +161,11 @@ public:
             std::string nazwa;
             std::cin >> nazwa;
 
-            schema << nazwa << std::endl;
+            schema << nazwa;
+            if(i != iloscKolumn-1)
+            {
+                schema << std::endl;
+            }
         }
     }
 
@@ -185,12 +189,12 @@ public:
 
         std::filesystem::path schemat = "schemat.txt";
         std::filesystem::path pelna_sciezka_schematu = tabelaDoModyfikacji / schemat;
-        ;
+
         std::ifstream schema(pelna_sciezka_schematu);
 
         std::cin.ignore();
         while (schema)
-        { // tutaj
+        { 
             std::string nazwa;
 
             schema >> nazwa;
@@ -223,7 +227,10 @@ public:
         {
             std::string temp;
             schemat >> temp;
-            kolumny.push_back(temp);
+            if(temp != "" && temp != " ")
+            {
+                kolumny.push_back(temp);
+            }
         }
 
         std::string calyWiersz;
@@ -306,14 +313,12 @@ public:
         getch();
     }
 
-
     void wypiszWszystkieDaneTabeli()
     {
         std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
         auto kolumnyIDane = pobierzDanieIKolumny(tabelaDoModyfikacji);
         wypiszDaneTabeli(kolumnyIDane);
     }
-
 
     void wyszukajWartoscWKolumnie()
     {
@@ -342,11 +347,25 @@ public:
             }
         }
 
-        std::cout << "Znalezione ideksy : \n";
-        for (int i = 0; i < indeksyZnalezionychElementow.size(); i++)
+        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami;
+
+        znalezioneElementyZKolmnami.push_back(kolumnyIDane[0]);
+
+        std::cout << "Znaleziono : " << indeksyZnalezionychElementow.size() << std::endl
+                  << std::endl;
+
+
+        if (indeksyZnalezionychElementow.size() != 0)
         {
-            std::cout << indeksyZnalezionychElementow[i];
+            for (int i = 0; i < indeksyZnalezionychElementow.size(); i++)
+            {
+                znalezioneElementyZKolmnami.push_back(kolumnyIDane[indeksyZnalezionychElementow[i]]);
+            }
+            
+            wypiszDaneTabeli(znalezioneElementyZKolmnami);
         }
+
+     
     }
 };
 int wypiszMenuGlowne()
