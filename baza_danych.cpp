@@ -109,7 +109,7 @@ public:
 
     std::filesystem::path wybierzTabeleDoModyfikacji()
     {
-        std::cout << "Ktorej tabeli chesz nadac wlasciowosci?\n";
+        std::cout << "Wybierz tabele : \n";
 
         int licznik = 0;
         std::filesystem::path tabelaDoModyfikacji;
@@ -162,7 +162,7 @@ public:
             std::cin >> nazwa;
 
             schema << nazwa;
-            if(i != iloscKolumn-1)
+            if (i != iloscKolumn - 1)
             {
                 schema << std::endl;
             }
@@ -194,7 +194,7 @@ public:
 
         std::cin.ignore();
         while (schema)
-        { 
+        {
             std::string nazwa;
 
             schema >> nazwa;
@@ -227,7 +227,7 @@ public:
         {
             std::string temp;
             schemat >> temp;
-            if(temp != "" && temp != " ")
+            if (temp != "" && temp != " ")
             {
                 kolumny.push_back(temp);
             }
@@ -320,6 +320,22 @@ public:
         wypiszDaneTabeli(kolumnyIDane);
     }
 
+    std::vector<std::vector<std::string>> przygotujVectorWynikowy(auto kolumnyIDane, std::vector<int> indeksyZnalezionychElementow)
+    {
+        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami;
+
+        znalezioneElementyZKolmnami.push_back(kolumnyIDane[0]);
+
+        if (indeksyZnalezionychElementow.size() != 0)
+        {
+            for (int i = 0; i < indeksyZnalezionychElementow.size(); i++)
+            {
+                znalezioneElementyZKolmnami.push_back(kolumnyIDane[indeksyZnalezionychElementow[i]]);
+            }
+        }
+        return znalezioneElementyZKolmnami;
+    }
+
     void wyszukajWartoscWKolumnie()
     {
         std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
@@ -347,25 +363,41 @@ public:
             }
         }
 
-        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami;
+        std::cout << "Znaleziono : " << indeksyZnalezionychElementow.size() << std::endl
+                  << std::endl;
 
-        znalezioneElementyZKolmnami.push_back(kolumnyIDane[0]);
+        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami = przygotujVectorWynikowy(kolumnyIDane, indeksyZnalezionychElementow);
+        wypiszDaneTabeli(znalezioneElementyZKolmnami);
+    }
+
+    void filtrujWartosciTabeli()
+    {
+        std::filesystem::path tabelaDoModyfikacji = wybierzTabeleDoModyfikacji();
+        auto kolumnyIDane = pobierzDanieIKolumny(tabelaDoModyfikacji);
+
+        std::string wartoscDoWyszukania;
+        std::cout << "Co chcesz wyszukac? ";
+        std::cin >> wartoscDoWyszukania;
+
+        std::vector<int> indeksyZnalezionychElementow;
+
+        for (int i = 1; i < kolumnyIDane.size(); i++)
+        {
+            for (int j = 0; j < kolumnyIDane[i].size(); j++)
+            {
+                if (kolumnyIDane[i][j].find(wartoscDoWyszukania) != std::string::npos)
+                {
+                    //pokazac jak dzila set i go to wykorzystac
+                    indeksyZnalezionychElementow.push_back(i);
+                }
+            }
+        }
 
         std::cout << "Znaleziono : " << indeksyZnalezionychElementow.size() << std::endl
                   << std::endl;
 
-
-        if (indeksyZnalezionychElementow.size() != 0)
-        {
-            for (int i = 0; i < indeksyZnalezionychElementow.size(); i++)
-            {
-                znalezioneElementyZKolmnami.push_back(kolumnyIDane[indeksyZnalezionychElementow[i]]);
-            }
-            
-            wypiszDaneTabeli(znalezioneElementyZKolmnami);
-        }
-
-     
+        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami = przygotujVectorWynikowy(kolumnyIDane, indeksyZnalezionychElementow);
+        wypiszDaneTabeli(znalezioneElementyZKolmnami);
     }
 };
 int wypiszMenuGlowne()
@@ -389,7 +421,8 @@ int wypiszMenuGlowne()
     std::cout << "[5] Podaj wiersz do tabeli\n";
     std::cout << "[6] Wyswietl wartosci tabeli\n";
     std::cout << "[7] Wyszukaj wartosc w tabeli\n";
-    std::cout << "[8] Zamknij program\n";
+    std::cout << "[8] Filtruj wszystkie wartosci w tabelach\n";
+    std::cout << "[9] Zamknij program\n";
     std::cin >> wybranaOpcja;
     return wybranaOpcja;
 }
@@ -426,6 +459,10 @@ int main()
 
         case 7:
             bazadanych.wyszukajWartoscWKolumnie();
+            break;
+
+        case 8:
+            bazadanych.filtrujWartosciTabeli();
             break;
 
         default:
