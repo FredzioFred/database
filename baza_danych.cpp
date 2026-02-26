@@ -3,6 +3,20 @@
 #include <filesystem>
 #include <conio.h>
 #include <vector>
+#include <set>
+#include <cstdlib>
+namespace helpers
+{
+    void wyczyscEkran()
+    {
+        #ifdef _WIN32
+        std::system("cls");
+        #else
+        std::system("clear")
+        #endif
+    }
+}
+
 
 class BazaDanach
 {
@@ -15,7 +29,8 @@ public:
         std::string nazwaTabeli;
 
         std::cout << "Podaj nazwe tabeli: ";
-        std::cin >> nazwaTabeli;
+        std::cin.ignore();
+        std::getline(std::cin, nazwaTabeli);
         std::filesystem::path directorypath = std::filesystem::path(mNazwaFolderuTabeli) / nazwaTabeli;
         if (!exists(directorypath))
         {
@@ -154,12 +169,13 @@ public:
         std::cout << "Ile mam byc kolumn : ";
         std::cin >> iloscKolumn;
 
+        std::cin.ignore();
         for (int i = 0; i < iloscKolumn; i++)
         {
             std::cout << "Jak ma nazywac sie " << i << " kolumna? ";
 
             std::string nazwa;
-            std::cin >> nazwa;
+            std::getline(std::cin, nazwa);
 
             schema << nazwa;
             if (i != iloscKolumn - 1)
@@ -197,7 +213,7 @@ public:
         {
             std::string nazwa;
 
-            schema >> nazwa;
+            getline(schema, nazwa);
             if (nazwa == "")
             {
                 break;
@@ -226,7 +242,7 @@ public:
         while (schemat)
         {
             std::string temp;
-            schemat >> temp;
+            getline(schemat, temp);
             if (temp != "" && temp != " ")
             {
                 kolumny.push_back(temp);
@@ -379,7 +395,7 @@ public:
         std::cout << "Co chcesz wyszukac? ";
         std::cin >> wartoscDoWyszukania;
 
-        std::vector<int> indeksyZnalezionychElementow;
+        std::set<int> indeksyZnalezionychElementow;
 
         for (int i = 1; i < kolumnyIDane.size(); i++)
         {
@@ -387,19 +403,25 @@ public:
             {
                 if (kolumnyIDane[i][j].find(wartoscDoWyszukania) != std::string::npos)
                 {
-                    //pokazac jak dzila set i go to wykorzystac
-                    indeksyZnalezionychElementow.push_back(i);
+                    // pokazac jak dzila set i go to wykorzystac
+                    indeksyZnalezionychElementow.insert(i);
                 }
             }
         }
 
+        std::vector<int> indeksyZnalezionychElementowVector(indeksyZnalezionychElementow.begin(), indeksyZnalezionychElementow.end());
+
         std::cout << "Znaleziono : " << indeksyZnalezionychElementow.size() << std::endl
                   << std::endl;
 
-        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami = przygotujVectorWynikowy(kolumnyIDane, indeksyZnalezionychElementow);
+        std::vector<std::vector<std::string>> znalezioneElementyZKolmnami = przygotujVectorWynikowy(kolumnyIDane, indeksyZnalezionychElementowVector);
         wypiszDaneTabeli(znalezioneElementyZKolmnami);
     }
 };
+
+
+
+
 int wypiszMenuGlowne()
 {
     int wybranaOpcja = 0;
@@ -424,10 +446,12 @@ int wypiszMenuGlowne()
     std::cout << "[8] Filtruj wszystkie wartosci w tabelach\n";
     std::cout << "[9] Zamknij program\n";
     std::cin >> wybranaOpcja;
+    helpers::wyczyscEkran();
     return wybranaOpcja;
 }
 int main()
 {
+    helpers::wyczyscEkran();
     BazaDanach bazadanych;
     while (true)
     {
